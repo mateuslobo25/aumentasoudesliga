@@ -43,6 +43,6 @@ jobs:
             corepack pnpm install --frozen-lockfile
             corepack pnpm check
             corepack pnpm build
-            sudo systemctl restart aumentasoudesliga
+            sudo systemctl restart aumentasoudesliga.service
           EOF
 
