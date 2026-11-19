@@ -1,0 +1,1 @@
+ALTER TABLE `songs` ADD `releaseType` enum('single','ep','album') DEFAULT 'single' NOT NULL;
