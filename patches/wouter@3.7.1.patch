@@ -2,7 +2,7 @@ diff --git a/esm/index.js b/esm/index.js
 index c83bc63a2c10431fb62e25b7d490656a3796f301..d53a4bc863609fb341fe5c5e6eaec5bc2f8f799d 100644
 --- a/esm/index.js
 +++ b/esm/index.js
-@@ -338,6 +338,23 @@ const Switch = ({ children, location }) => {
+@@ -338,5 +338,22 @@ const Switch = ({ children, location }) => {
    const router = useRouter();
    const [originalLocation] = useLocationFromRouter(router);
 
