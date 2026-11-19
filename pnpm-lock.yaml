@@ -9,7 +9,7 @@ overrides:
 
 patchedDependencies:
   wouter@3.7.1:
-    hash: 5f33441a91a368e81b04ca48b062a48b6fb1fb22eb403278337957cc8d4903f6
+    hash: 09ace08417781d63120910a566beaf4e9c358c125f4769438e55c49c13e3be93
     path: patches/wouter@3.7.1.patch
 
 importers:
@@ -204,7 +204,7 @@ importers:
         version: 1.1.2(@types/react-dom@19.2.1(@types/react@19.2.1))(@types/react@19.2.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       wouter:
         specifier: ^3.3.5
-        version: 3.7.1(patch_hash=5f33441a91a368e81b04ca48b062a48b6fb1fb22eb403278337957cc8d4903f6)(react@19.2.1)
+        version: 3.7.1(patch_hash=09ace08417781d63120910a566beaf4e9c358c125f4769438e55c49c13e3be93)(react@19.2.1)
       zod:
         specifier: ^4.1.12
         version: 4.1.12
@@ -8986,7 +8986,7 @@ snapshots:
       siginfo: 2.0.0
       stackback: 0.0.2
 
-  wouter@3.7.1(patch_hash=5f33441a91a368e81b04ca48b062a48b6fb1fb22eb403278337957cc8d4903f6)(react@19.2.1):
+  wouter@3.7.1(patch_hash=09ace08417781d63120910a566beaf4e9c358c125f4769438e55c49c13e3be93)(react@19.2.1):
     dependencies:
       mitt: 3.0.1
       react: 19.2.1
