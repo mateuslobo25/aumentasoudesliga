@@ -1,0 +1,48 @@
+
+name: Deploy Aumentas ou Desligas
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy na VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v4
+
+      - name: Configurar SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Preparar ligação SSH
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Transferir projeto para VPS
+        run: |
+          rsync -az \
+            --exclude='.git/' \
+            --exclude='node_modules/' \
+            --exclude='.env' \
+            --exclude='dist/' \
+            ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/opt/elvortech/apps/aumentasoudesliga/
+
+      - name: Instalar dependências e compilar
+        run: |
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'bash -s' <<'EOF'
+            set -e
+            cd /opt/elvortech/apps/aumentasoudesliga
+            corepack pnpm install --frozen-lockfile
+            corepack pnpm check
+            corepack pnpm build
+            sudo systemctl restart aumentasoudesliga
+          EOF
+
