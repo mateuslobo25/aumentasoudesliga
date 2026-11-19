@@ -39,6 +39,7 @@ jobs:
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'bash -s' <<'EOF'
             set -e
+            export PATH="/home/adminops/.nvm/versions/node/v24.22.3/bin:$PATH"
             cd /opt/elvortech/apps/aumentasoudesliga
             corepack pnpm install --frozen-lockfile
             corepack pnpm check
