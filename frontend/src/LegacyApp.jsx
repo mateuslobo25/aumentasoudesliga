@@ -31,12 +31,84 @@ const resetLocalDataOnce=()=>{
 
 const pageFromPath=()=>({admin:'admin','/admin':'admin','/':'home','/musicas':'songs','/noticias':'news','/artistas':'artists','/playlists':'playlists','/top-100':'top100','/politica-privacidade':'legal','/termos':'legal','/perfil':'profile','/sobre':'about'})[window.location.pathname]||'home';
 const pagePath={home:'/',songs:'/musicas',news:'/noticias',artists:'/artistas',playlists:'/playlists',top100:'/top-100',legal:'/politica-privacidade',profile:'/perfil',about:'/sobre'};
+const SEO_CONFIG = {
+  home: {
+    title: "Aumentas ou Desligas | Música, Cultura e Notícias",
+    description: "Descobre novas músicas, artistas, notícias e tendências da cultura musical em Angola.",
+  },
+  songs: {
+    title: "Músicas | Aumentas ou Desligas",
+    description: "Descobre músicas, lançamentos e novidades musicais em Angola.",
+  },
+  news: {
+    title: "Notícias | Aumentas ou Desligas",
+    description: "Acompanha as últimas notícias da música, cultura e entretenimento.",
+  },
+  artists: {
+    title: "Artistas | Aumentas ou Desligas",
+    description: "Conhece artistas e descobre novos talentos da música angolana.",
+  },
+  playlists: {
+    title: "Playlists | Aumentas ou Desligas",
+    description: "Explora playlists e seleções musicais do Aumentas ou Desligas.",
+  },
+  top100: {
+    title: "Top 100 | Aumentas ou Desligas",
+    description: "Descobre as músicas em destaque no Top 100.",
+  },
+  about: {
+    title: "Sobre Nós | Aumentas ou Desligas",
+    description: "Conhece o Aumentas ou Desligas, uma plataforma dedicada à música e cultura.",
+  },
+  legal: {
+    title: "Informações Legais | Aumentas ou Desligas",
+    description: "Consulta os termos de utilização e a política de privacidade.",
+  },
+  profile: {
+    title: "A minha conta | Aumentas ou Desligas",
+    description: "Acede à tua conta no Aumentas ou Desligas.",
+  },
+  admin: {
+    title: "Área Administrativa | Aumentas ou Desligas",
+    description: "Área reservada de gestão da plataforma.",
+  },
+};
+
 function App(){
  const cleared=resetLocalDataOnce();
  const auth=useAuth();
  const remoteCatalog=trpc.editorial.publicCatalog.useQuery(undefined,{refetchInterval:5000});
  const [songs,setSongs]=useState(()=>getStore('aod_songs',seedSongs).map(s=>({...s,cover:typeof s.cover==='string'&&(s.cover.includes('/assets/logo-')||s.cover.includes('/src/assets/logo.png'))?logo:s.cover}))); const [news,setNews]=useState(()=>getStore('aod_news',seedNews).map(n=>({...n,image:typeof n.image==='string'&&(n.image.includes('/assets/logo-')||n.image.includes('/src/assets/logo.png'))?logo:n.image}))); const [artists,setArtists]=useState(()=>normalizeCatalog(getStore('aod_artists',defaultArtists))); const [categories,setCategories]=useState(()=>normalizeCatalog(getStore('aod_categories',defaultCategories))); const [users,setUsers]=useState(()=>getStore('aod_users',seedUsers)); const [comments,setComments]=useState(()=>getStore('aod_comments',seedComments)); const [siteSettings,setSiteSettings]=useState(()=>getStore('aod_settings',{siteName:'Aumentas ou Desligas',description:'Portal de música, notícias e comunidade.',maintenance:false,emailNotifications:true,publicRegistration:true,autoApproveComments:false,showSocials:true,uploadMaxMB:80,defaultTheme:'light',seoTitle:'Aumentas ou Desligas',seoDescription:'Música, cultura, vídeos e comunidade.',contactEmail:'suporte@aumentasoudesligas.com'})); const [adminCreds,setAdminCreds]=useState(()=>getStore('aod_admin_creds',defaultAdminCreds));
- const [user,setUser]=useState(()=>getStore('aod_user',null)); const [videos,setVideos]=useState(()=>getStore('aod_videos',seedVideos)); const [mediaUrls,setMediaUrls]=useState({}); const [mediaMeta,setMediaMeta]=useState({}); const [reactions,setReactions]=useState(()=>getStore('aod_reactions',{songs:{},news:{},videos:{},comments:{}})); const [analytics,setAnalytics]=useState(()=>getStore('aod_analytics',{visitors:0,views:0,downloads:0})); const [page,setPage]=useState(pageFromPath); const [search,setSearch]=useState(''); const [mobile,setMobile]=useState(false); const [playing,setPlaying]=useState(null); const [admin,setAdmin]=useState(()=>getStore('aod_admin_auth',false)); const [selected,setSelected]=useState(null); const [theme,setTheme]=useState(()=>getStore('aod_theme','light'));
+ const [user,setUser]=useState(()=>getStore('aod_user',null)); const [videos,setVideos]=useState(()=>getStore('aod_videos',seedVideos)); const [mediaUrls,setMediaUrls]=useState({}); const [mediaMeta,setMediaMeta]=useState({}); const [reactions,setReactions]=useState(()=>getStore('aod_reactions',{songs:{},news:{},videos:{},comments:{}})); const [analytics,setAnalytics]=useState(()=>getStore('aod_analytics',{visitors:0,views:0,downloads:0})); const [page,setPage]=useState(pageFromPath);
+ useEffect(()=>{
+   const seo=SEO_CONFIG[page]||SEO_CONFIG.home;
+   document.title=seo.title;
+
+   let description=document.querySelector('meta[name="description"]');
+   if(!description){
+     description=document.createElement('meta');
+     description.name='description';
+     document.head.appendChild(description);
+   }
+   description.content=seo.description;
+
+   let canonical=document.querySelector('link[rel="canonical"]');
+   if(!canonical){
+     canonical=document.createElement('link');
+     canonical.rel='canonical';
+     document.head.appendChild(canonical);
+   }
+   canonical.href=window.location.origin+window.location.pathname;
+
+   let robots=document.querySelector('meta[name="robots"]');
+   if(!robots){
+     robots=document.createElement('meta');
+     robots.name='robots';
+     document.head.appendChild(robots);
+   }
+   robots.content=page==='admin'||page==='profile'?'noindex, nofollow':'index, follow';
+ },[page]);
+ const [search,setSearch]=useState(''); const [mobile,setMobile]=useState(false); const [playing,setPlaying]=useState(null); const [admin,setAdmin]=useState(()=>getStore('aod_admin_auth',false)); const [selected,setSelected]=useState(null); const [theme,setTheme]=useState(()=>getStore('aod_theme','light'));
  useEffect(()=>{if(!remoteCatalog.data)return;const remoteSongs=remoteCatalog.data.songs.map(({song,audio,cover})=>({...song,id:`remote-song-${song.id}`,genre:song.category,duration:`${Math.floor(song.durationSeconds/60)}:${String(song.durationSeconds%60).padStart(2,'0')}`,cover:cover?.url||logo,audio:audio.url,downloads:0}));setSongs(prev=>{const local=prev.filter(item=>!remoteSongs.some(remote=>remote.title===item.title&&remote.artist===item.artist));return [...remoteSongs,...local]});const remoteNews=remoteCatalog.data.news.map(({article,image})=>({...article,id:`remote-news-${article.id}`,date:new Date(article.publishedAt||Date.now()).toLocaleDateString('pt-PT'),views:0,likes:0,image:image?.url||logo}));setNews(prev=>{const local=prev.filter(item=>!remoteNews.some(remote=>remote.title===item.title));return [...remoteNews,...local]})},[remoteCatalog.data]);
  useEffect(()=>{saveStore('aod_songs',songs)},[songs]); useEffect(()=>{saveStore('aod_analytics',analytics)},[analytics]); useEffect(()=>{saveStore('aod_news',news)},[news]); useEffect(()=>{saveStore('aod_artists',artists)},[artists]); useEffect(()=>{saveStore('aod_categories',categories)},[categories]); useEffect(()=>{saveStore('aod_users',users)},[users]); useEffect(()=>{saveStore('aod_comments',comments)},[comments]); useEffect(()=>{saveStore('aod_videos',videos)},[videos]); useEffect(()=>{saveStore('aod_reactions',reactions)},[reactions]); useEffect(()=>{if(cleared)clearMedia().catch(()=>{});const key='aod_visit_session';const isNew=!sessionStorage.getItem(key);if(isNew)sessionStorage.setItem(key,'1');setAnalytics(prev=>({...prev,visitors:prev.visitors+(isNew?1:0),views:prev.views+1}))},[]); useEffect(()=>{let cancelled=false;const keys=[...new Set([...songs.map(s=>s.mediaKey),...videos.map(v=>v.mediaKey)].filter(Boolean))];Promise.all(keys.map(async key=>{try{const stored=await loadMedia(key);const blob=stored?.blob||stored;return [key,stored&&blob?{url:URL.createObjectURL(blob),name:stored.name||'ficheiro',type:stored.type||blob.type||''}:null]}catch(err){console.warn('Não foi possível carregar o ficheiro',key,err);return [key,null]}})).then(entries=>{if(cancelled)return;const valid=entries.filter(([,value])=>value);setMediaUrls(prev=>{Object.values(prev).forEach(item=>{if(!valid.some(([key,value])=>value?.url===item.url))URL.revokeObjectURL(item.url)});return Object.fromEntries(valid.map(([key,value])=>[key,value.url]))});setMediaMeta(Object.fromEntries(valid))});return()=>{cancelled=true}},[songs,videos]);
 	 useEffect(()=>{songs.filter(s=>(s.audio||s.mediaKey&&mediaUrls[s.mediaKey])&&(!s.duration||s.duration==='0:00')).forEach(s=>{const audio=new Audio(s.audio||mediaUrls[s.mediaKey]);audio.onloadedmetadata=()=>{if(Number.isFinite(audio.duration)&&audio.duration>0){const total=Math.round(audio.duration);const formatted=`${Math.floor(total/60)}:${String(total%60).padStart(2,'0')}`;setSongs(prev=>prev.map(item=>item.id===s.id?{...item,duration:formatted}:item))}}})},[mediaUrls]); useEffect(()=>{saveStore('aod_settings',siteSettings)},[siteSettings]); useEffect(()=>{saveStore('aod_admin_creds',adminCreds)},[adminCreds]); useEffect(()=>{saveStore('aod_user',user)},[user]); useEffect(()=>{document.documentElement.dataset.theme=theme;saveStore('aod_theme',theme)},[theme]);
